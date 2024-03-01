@@ -27,11 +27,7 @@ const Step1 = () => {
   const [minReturnDateTime, setMinReturnDateTime] = useState();
   const [address, setAddress] = useState('');
 
-
   useEffect(() => {
-    // Clear local storage when Step1.js is loaded
-    localStorage.clear();
-
     const fetchData = async () => {
       try {
         const tokenResponse = await axios.post('https://calm-retreat-90846-cd036e8a822e.herokuapp.com/https://api.rentsyst.com/oauth2/token', {
@@ -177,7 +173,12 @@ const Step1 = () => {
       setReturnDateTime(localDate);
       // Format and save the return date/time to localStorage in the specified format
       localStorage.setItem('DateToURL', moment(localDate).format("YYYY-MM-DD HH:mm:ss"));
+      // Do not automatically navigate to Step2.js
     }
+  };
+
+  const navigateToStep2 = () => {
+    history.push('/step2');
   };
 
   const handleSubmitCustomAddress = () => {
