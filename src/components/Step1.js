@@ -21,11 +21,8 @@ const Step1 = () => {
   const [locations, setLocations] = useState([]);
   const [selectedLocation, setSelectedLocation] = useState('');
   const history = useHistory();
-  const [userTimeZone, setUserTimeZone] = useState('');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
   const [minReturnDateTime, setMinReturnDateTime] = useState();
-  const [address, setAddress] = useState('');
+  const [dateFromURL, setDateFromURL] = useState(localStorage.getItem('DateFromURL') || '');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,24 +35,21 @@ const Step1 = () => {
         const token = tokenResponse.data.access_token;
         localStorage.setItem('token', token);
 
-        console.log('Token:', token); // Log the token to verify
-
         const locationsResponse = await axios.get('https://calm-retreat-90846-cd036e8a822e.herokuapp.com/https://api.rentsyst.com/v2/company/settings', {
           headers: {
             Authorization: `Bearer ${token}`
           }
         });
 
-        console.log('Locations Response:', locationsResponse); // Log the response to verify
-
         const data = locationsResponse.data.locations;
         setLocations(data);
-
       } catch (error) {
         console.error('Error fetching data:', error);
         setError('Failed to fetch data. Please try again later.');
       } finally {
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false); // Turn off loading screen after 5 seconds
+        }, 5000); // 5000 milliseconds = 5 seconds
       }
     };
 
@@ -63,67 +57,56 @@ const Step1 = () => {
   }, []);
 
   useEffect(() => {
+    localStorage.clear();
+  }, []);
+
+  useEffect(() => {
+    if (dateFromURL && returnDateTime) {
+      const from = moment(dateFromURL, "YYYY-MM-DD HH:mm:ss");
+      const to = moment(returnDateTime, "YYYY-MM-DD HH:mm:ss");
+
+      if (from.isValid() && to.isValid()) {
+        const durationDays = to.diff(from, 'days') + 1;
+        localStorage.setItem('ReservationDuration', durationDays.toString());
+      }
+    }
+  }, [dateFromURL, returnDateTime]);
+
+  useEffect(() => {
     if (pickupDateTime) {
-      // Calculate the minimum return date/time as 48 hours after the pickup date/time
       const minReturnDate = new Date(pickupDateTime.getTime() + 48 * 60 * 60 * 1000);
       setMinReturnDateTime(minReturnDate);
 
-      // If the currently selected return date/time is less than 48 hours after the pickup,
-      // reset the return date/time to enforce the 48-hour rule
       if (returnDateTime && returnDateTime < minReturnDate) {
         setReturnDateTime(minReturnDate);
       }
     }
   }, [pickupDateTime, returnDateTime]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'pickupLocation') {
-      setPickupLocation(value);
-    } else if (name === 'returnLocation') {
-      setReturnLocation(value);
-    } else if (name === 'dateFrom') {
-      setDateFrom(value);
-    } else if (name === 'dateTo') {
-      setDateTo(value);
-    }
-  };
-
   const handleLocationChange = (e) => {
     const value = e.target.value;
-    console.log('Selected location value:', value);
-
     setSelectedLocation(value);
 
-    console.log('Current locations array:', locations); // Log the locations array for inspection
-
     if (value === 'deliver_to_me') {
-      console.log('Deliver to me selected');
       setDeliverToMe(true);
     } else {
       const selectedLocationObj = locations.find(location => location.id.toString() === value);
-      console.log('Selected location object:', selectedLocationObj); // Check what the find method returns
 
       if (selectedLocationObj) {
         const locationName = selectedLocationObj.name;
-        console.log('Selected location name:', locationName);
 
         setPickupLocation(locationName);
         setReturnLocation(locationName);
 
-        // Store the location ID for API calls
         localStorage.setItem('PickupLocationURL', selectedLocationObj.id.toString());
         localStorage.setItem('ReturnLocationURL', selectedLocationObj.id.toString());
 
         try {
           localStorage.setItem('pickupLocation', locationName);
           localStorage.setItem('returnLocation', locationName);
-          console.log('Locations stored in localStorage');
         } catch (error) {
           console.error('Error setting locations in localStorage:', error);
         }
-      } else {
-        console.log('No matching location found for the selected value');
       }
       setDeliverToMe(false);
       setStep(2);
@@ -135,33 +118,29 @@ const Step1 = () => {
     try {
       const results = await geocodeByAddress(value);
       const latLng = await getLatLng(results[0]);
-      setCustomAddress(value); // Update the custom address with the selected Google Maps address
-      localStorage.setItem('selectedAddress', value); // Store the selected address in local storage
-      localStorage.setItem('CustomAddressURL', value); // Store the Google Maps address for API call
+      setCustomAddress(value);
+      localStorage.setItem('selectedAddress', value);
+      localStorage.setItem('CustomAddressURL', value);
     } catch (error) {
       console.error('Error selecting address:', error);
       setError(error.message);
     }
-    setAddress(value); // Update local state
-    localStorage.setItem('selectedAddress', value); // Update local storage
-    // Optionally, handle geocode results
-
   };
 
   const handlePickupChange = (date) => {
-    // Ensure the pickup date is not in the past
     const currentDate = new Date();
     const selectedDate = new Date(date);
-
+  
     if (currentDate.getTime() < selectedDate.getTime()) {
       const utcDate = moment.utc(date).format();
       const localDate = moment.utc(utcDate).local().toDate();
       setPickupDateTime(localDate);
-      // Format and save the pickup date/time to localStorage in the specified format
-      localStorage.setItem('DateFromURL', moment(localDate).format("YYYY-MM-DD HH:mm:ss"));
+      const formattedDateTime = moment(localDate).format("YYYY-MM-DD HH:mm:ss");
+      localStorage.setItem('datefromurl', formattedDateTime); // Set datefromurl in localStorage
+      setDateFromURL(formattedDateTime);
     }
   };
-
+  
   const handleReturnChange = (date) => {
     if (!pickupDateTime) {
       return;
@@ -171,23 +150,9 @@ const Step1 = () => {
       const utcDate = moment.utc(date).format();
       const localDate = moment.utc(utcDate).local().toDate();
       setReturnDateTime(localDate);
-      // Format and save the return date/time to localStorage in the specified format
-      localStorage.setItem('DateToURL', moment(localDate).format("YYYY-MM-DD HH:mm:ss"));
-      // Do not automatically navigate to Step2.js
+      const formattedDateTime = moment(localDate).format("YYYY-MM-DD HH:mm:ss");
+      localStorage.setItem('DateToURL', formattedDateTime); // Set DateToURL in localStorage
     }
-  };
-
-  const navigateToStep2 = () => {
-    history.push('/step2');
-  };
-
-  const handleSubmitCustomAddress = () => {
-    const selectedLocationName = customAddress;
-    localStorage.setItem('selectedLocationName', selectedLocationName);
-    localStorage.setItem('pickupLocation', selectedLocationName); // Store pickupLocation in local storage
-    localStorage.setItem('returnLocation', selectedLocationName); // Store returnLocation in local storage
-    localStorage.setItem('CustomAddressURL', selectedLocationName); // Store the Google Maps address for API call
-    setStep(2);
   };
 
   const handlePickupConfirmation = () => {
@@ -197,33 +162,40 @@ const Step1 = () => {
   };
 
   const handleReturnConfirmation = () => {
+    if (!returnDateTime) {
+      return; // Prevent further execution if returnDateTime is null
+    }
     setStep(4);
     const formattedToDate = returnDateTime.toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: true });
     localStorage.setItem('dateTo', formattedToDate);
   };
-
+  
   const handleViewVehicles = () => {
     history.push({
       pathname: '/step2',
       state: {
-        pickupLocation, // Pass pickupLocation to Step2.js
-        returnLocation, // Pass returnLocation to Step2.js
+        pickupLocation,
+        returnLocation,
+        DateFromURL: localStorage.getItem('datefromurl'),
       },
     });
   };
 
-
   return (
     <div className="app">
       {loading && <LoadingScreen />}
-      {!loading && (
+      {!loading && error && (
+        <div className="error-screen" style={{ background: 'black', color: 'white', height: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ fontSize: '72px', fontWeight: 'bold' }}>404</div>
+          <div style={{ fontSize: '24px' }}>Oops! Something went wrong.</div>
+        </div>
+      )}
+      {!loading && !error && (
         <>
           <img src="/logo.png" alt="G RIDES Logo" className="logo" style={{ position: 'absolute', top: '60px', left: '10px', marginTop: '0' }} />
           <div className="content-container">
             <h1>Your destination awaits…</h1>
             <div className="input-container">
-              <div className="reservation-details">
-              </div>
               {step === 1 && (
                 <div className="step">
                   <label htmlFor="location">Location:</label>
@@ -271,7 +243,6 @@ const Step1 = () => {
                             </div>
                           )}
                         </PlacesAutocomplete>
-                        <button onClick={handleSubmitCustomAddress}>Submit Address</button>
                       </div>
                     </div>
                   )}
@@ -323,7 +294,6 @@ const Step1 = () => {
                   <button className="submit-button" onClick={handleViewVehicles}>View Vehicles</button>
                 </div>
               )}
-              {error && <div className="error-message">{error}</div>}
             </div>
           </div>
         </>
@@ -342,4 +312,3 @@ const LoadingScreen = () => (
 );
 
 export default Step1;
-
