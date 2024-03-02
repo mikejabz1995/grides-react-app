@@ -8,10 +8,9 @@ const App = () => {
   return (
     <Router>
       <Switch>
+        <Route exact path="/" component={Step1} />
         <Route path="/gate-entry" component={GateEntryPage} />
-        <Route path="/step1" component={Step1} />
         <Route path="/step2" component={Step2} />
-        <Route path="/" component={GateEntryPage} />
       </Switch>
     </Router>
   );
