@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
+const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -45,6 +46,14 @@ app.get('/api/company/settings', async (req, res) => {
     console.error('Error fetching company settings:', error);
     res.status(500).json({ error: 'Failed to fetch company settings' });
   }
+});
+
+// Serve static files from the build folder
+app.use(express.static(path.resolve(__dirname, 'build')));
+
+// Handle any other routes by serving the index.html file
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
 });
 
 // Start the server
