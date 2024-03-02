@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/grides-react-app/static/css/main.6450fe83.css",
+    "main.js": "/grides-react-app/static/js/main.0939a3d8.js",
+    "static/js/453.7eb34c8b.chunk.js": "/grides-react-app/static/js/453.7eb34c8b.chunk.js",
+    "index.html": "/grides-react-app/index.html",
+    "main.6450fe83.css.map": "/grides-react-app/static/css/main.6450fe83.css.map",
+    "main.0939a3d8.js.map": "/grides-react-app/static/js/main.0939a3d8.js.map",
+    "453.7eb34c8b.chunk.js.map": "/grides-react-app/static/js/453.7eb34c8b.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6450fe83.css",
+    "static/js/main.0939a3d8.js"
+  ]
+}
