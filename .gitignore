@@ -1,0 +1,11 @@
+
+.DS_Store
+.DS_Store
+src/node_modules/openai/src/.DS_Store
+src/node_modules/openai/node_modules/.DS_Store
+src/node_modules/openai/.DS_Store
+src/node_modules/.DS_Store
+src/.DS_Store
+node_modules/.DS_Store
+node_modules/.cache/.DS_Store
+build/.DS_Store
