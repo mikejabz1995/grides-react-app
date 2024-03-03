@@ -1,0 +1,214 @@
+/* Step2.css */
+
+/* General styles */
+.step2-container {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.step2-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Reservation details */
+.reservation-details {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  max-width: 920px;
+  font-size: 16px;
+  color: #eac831;
+}
+
+.reservation-detail {
+  margin: 0 10px;
+}
+
+.detail-value {
+  font-weight: bold;
+}
+
+.priceLabel {
+  color: #eac831;
+}
+
+.reserve-now-btn {
+  background-color: #eac831;
+  color: black;
+}
+
+/* Vehicle description */
+.vehicle-description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+/* Vehicle thumbnail */
+.vehicle-thumbnail {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 250px;
+  height: 200px;
+  overflow: hidden;
+}
+
+.vehicle-thumbnail img {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Form elements */
+input[type="datetime-local"],
+input[type="text"],
+select,
+textarea,
+button {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Vehicle catalog */
+.vehicle-catalog-container {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Media queries */
+@media (min-width: 768px) {
+  .vehicle-grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .vehicle-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Filter sidebar */
+.filter-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.filter-sidebar input,
+.filter-sidebar select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.filter-sidebar input:focus,
+.filter-sidebar select:focus {
+  border-color: #eac831;
+}
+
+@media (max-width: 768px) {
+  .filter-sidebar {
+    padding: 10px;
+    gap: 10px;
+  }
+}
+
+.filter-sidebar button {
+  background-color: #eac831;
+  color: #000;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.filter-sidebar button:hover {
+  opacity: 0.9;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  padding: 0 15px;
+  align-self: flex-end; /* Position sidebar at the end of flex container */
+}
+
+.sidebar > * {
+  box-sizing: border-box;
+  width: calc(100% - 30px);
+  margin-bottom: 20px;
+}
+
+.sidebar .filter-section input[type="range"] {
+  width: 100%;
+}
+
+/* Top bar */
+.top-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #000;
+  color: #fff;
+  padding: 10px 20px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Vehicle description container */
+.vehicle-description-container {
+  overflow: visible;
+}
+
+/* Color display */
+.color-display {
+  font-weight: bold;
+}
+
+/* Container */
+.container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Reservation details */
+.reservation-details {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.reservation-details p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.reservation-details span {
+  margin-left: 5px;
+  font-weight: bold;
+}
+
+/* Logo */
+.logo {
+  margin-left: -40px;
+  padding-right: 20px;
+}
